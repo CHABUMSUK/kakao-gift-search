@@ -24,6 +24,6 @@ let ok=false;for(let t=0;t<3&&!ok;t++){try{D=await load();ok=true}catch(e){if(!D
 if(ok){NL=false;$('lgb').style.display='none';try{localStorage.kgxCache=JSON.stringify(D)}catch(e){}$('n').textContent='선물 '+D.length+'개';chips();R()}
 else{NL=true;$('n').textContent='로그인이 필요해요';$('lgb').style.display='inline-block';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(code|token|state|auth_tran_id)=[^&\s]+/gi,'$1=***');
-let ck='-',nl='-';try{ck=window.KGX?KGX.cookieNames('https://gift.kakao.com'):'(KGX 없음)';nl=window.KGX?KGX.navLog():''}catch(e){}
+let ck='-',nl='-';try{ck=window.KGX?KGX.cookieNames('https://gift.kakao.com')+' | '+KGX.info()+' | uaMobile='+(navigator.userAgentData&&navigator.userAgentData.mobile):'(KGX 없음)';nl=window.KGX?KGX.navLog():''}catch(e){}
 DG='[진단] '+DG+'\n[쿠키] '+ck+'\n[이동]\n'+nl;DGH='<pre class=dg>'+esc(DG)+'</pre>';R()}
 })();

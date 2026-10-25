@@ -1,0 +1,24 @@
+(async()=>{
+if(location.hostname!=='gift.kakao.com')return;
+let o=document.getElementById('kgx');if(o){o.style.display='flex';return}
+o=document.createElement('div');o.id='kgx';
+o.innerHTML='<style>#kgx{position:fixed;inset:0;z-index:2147483646;background:#f6f6f6;display:flex;flex-direction:column;font:15px sans-serif;color:#222}#kgx .h{background:#FEE500;padding:10px;flex:none}#kgx input{width:100%;box-sizing:border-box;padding:11px;font-size:17px;border:1px solid #ccc;border-radius:10px;margin-top:8px}#kgx .c{display:flex;gap:6px;overflow-x:auto;padding:8px 10px;background:#fff;flex:none;border-bottom:1px solid #eee}#kgx .c span{white-space:nowrap;padding:7px 11px;border:1px solid #ddd;border-radius:16px;font-size:13px;background:#fafafa}#kgx .c .on{background:#222;color:#fff;border-color:#222}#kgx .l{flex:1;overflow-y:auto;padding:8px 10px}#kgx .s{font-size:12px;color:#555;margin:2px 0 8px}#kgx .g{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid #eee;border-radius:12px;padding:8px;margin-bottom:7px}#kgx img{width:54px;height:54px;border-radius:8px;object-fit:cover;flex:none}#kgx .g div{flex:1;min-width:0}#kgx .g b{font-size:15px}#kgx small{display:block;color:#888;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#kgx .d{font-weight:700}#kgx a{flex:none;padding:11px 10px;border-radius:10px;background:#FEE500;color:#222;font:700 13px sans-serif;text-decoration:none}#kgx a.b{background:#222;color:#FEE500;padding:11px 9px}#kgx button{float:right;padding:6px 12px;border:1px solid #ccc;border-radius:8px;background:#fff;font-size:14px}#kgx .lg{display:block;margin:30px auto;text-align:center;width:80%;padding:16px;font-size:17px}</style><div class=h><button id=x>닫기</button><b id=n>불러오는 중...</b><input id=q type=search placeholder="메가 아메리카노 / 배라 / 스벅 / 47기"></div><div class=c id=c></div><div class=l id=l></div>';
+document.body.append(o);
+const $=i=>o.querySelector('#'+i);$('x').onclick=()=>o.style.display='none';
+const A={'메가MGC커피':'메가커피 메가 mgc','배스킨라빈스':'베스킨라빈스 베라 배라 br 아이스크림','스타벅스':'스벅 starbucks','투썸플레이스':'투썸','컴포즈커피':'컴포즈','이디야커피':'이디야','GS25':'지에스 편의점','CU':'씨유 편의점','세븐일레븐':'세븐 편의점','맥도날드':'맥날','파리바게뜨':'파바','교촌치킨':'교촌 치킨','BHC':'치킨'};
+const K=t=>{const u=encodeURIComponent('https://gift.kakao.com/giftbox/inbox/detail/'+t);return['intent://gift/home?to='+u+'&input_channel_id=17918#Intent;scheme=kakaotalk;package=com.kakao.talk;end','kakaotalk://inappbrowser?url='+u]};
+let D=[],B='';try{D=JSON.parse(localStorage.kgxCache||'[]')}catch(e){}
+$('q').value=localStorage.kgxQ||'';
+const chips=()=>{const c={};D.forEach(g=>c[g.brandName]=(c[g.brandName]||0)+1);$('c').innerHTML=Object.entries(c).sort((a,b)=>b[1]-a[1]).map(([b,n])=>'<span data-b="'+b+'"'+(b===B?' class=on':'')+'>'+b+' '+n+'</span>').join('')};
+const R=()=>{localStorage.kgxQ=$('q').value;const q=$('q').value.toLowerCase().split(/\s+/).filter(x=>x);
+const V=D.filter(g=>(!B||g.brandName===B)&&q.every(w=>(g.brandName+' '+(A[g.brandName]||'')+' '+g.itemName+' '+g.senderName).toLowerCase().includes(w)));
+const s={};V.forEach(g=>s[g.itemName]=(s[g.itemName]||0)+1);const top=Object.entries(s).sort((x,y)=>y[1]-x[1]).slice(0,4).map(([n,c])=>n+' ×'+c).join(' · ');
+$('l').innerHTML='<div class=s>'+V.length+'개'+(top?' · '+top:'')+'</div>'+V.slice(0,300).map(g=>{const k=K(g.tradeNo),st=g.stamp&&g.stamp.value,col=st?'#597ef7':g.remainDay<=7?'#ff4d4f':g.remainDay<=30?'#fa8c16':'#999';
+return '<div class=g><img loading=lazy src="'+g.itemImageUrl+'"><div><b>'+g.itemName+'</b><small><span class=d style="color:'+col+'">'+(st||'D-'+g.remainDay)+'</span> · '+g.brandName+'</small><small>'+g.senderName+' · '+g.receivedAt.slice(0,10)+'</small></div><a href="'+k[0]+'">바코드</a><a class=b href="'+k[1]+'">2</a></div>'}).join('')};
+$('c').onclick=e=>{const b=e.target.dataset&&e.target.dataset.b;if(b===undefined)return;B=B===b?'':b;chips();R()};
+$('q').oninput=R;
+if(D.length){$('n').textContent=D.length+'개 (갱신중)';chips();R()}
+try{let N=[],p=0,L=false;while(!L&&p<50){const r=await fetch('/a/giftbox/v2/giftbox/inbox/OPEN/list?sortType=EXPIRED_AT_AND_PAID_AT&size=100&page='+p+'&uncache='+Date.now(),{credentials:'include'});if(!r.ok)throw 0;const j=await r.json();if(!j.content)throw 0;N.push(...j.content);L=j.isLast;p++}
+D=N;try{localStorage.kgxCache=JSON.stringify(D)}catch(e){}$('n').textContent='선물 '+D.length+'개';chips();R()}
+catch(e){$('n').textContent='로그인이 필요해요';$('l').innerHTML='<a class=lg href="https://accounts.kakao.com/login/?continue='+encodeURIComponent('https://gift.kakao.com/home')+'">카카오 로그인하기</a>'}
+})();

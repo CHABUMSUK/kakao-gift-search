@@ -14,7 +14,7 @@ const R=()=>{localStorage.kgxQ=$('q').value;if(NL&&!D.length){$('l').innerHTML=L
 const V=D.filter(g=>(!B||g.brandName===B)&&q.every(w=>(g.brandName+' '+(A[g.brandName]||'')+' '+g.itemName+' '+g.senderName).toLowerCase().includes(w)));
 const s={};V.forEach(g=>s[g.itemName]=(s[g.itemName]||0)+1);const top=Object.entries(s).sort((x,y)=>y[1]-x[1]).slice(0,4).map(([n,c])=>n+' ×'+c).join(' · ');
 $('l').innerHTML='<div class=s>'+V.length+'개'+(top?' · '+top:'')+'</div>'+V.slice(0,300).map(g=>{const k=K(g.tradeNo),st=g.stamp&&g.stamp.value,col=st?'#597ef7':g.remainDay<=7?'#ff4d4f':g.remainDay<=30?'#fa8c16':'#999';
-return '<div class=g><img loading=lazy src="'+g.itemImageUrl+'"><div><b>'+g.itemName+'</b><small><span class=d style="color:'+col+'">'+(st||'D-'+g.remainDay)+'</span> · '+g.brandName+'</small><small>'+g.senderName+' · '+g.receivedAt.slice(0,10)+'</small></div><a href="'+k[0]+'">바코드</a><a class=b href="'+k[1]+'">2</a></div>'}).join('')};
+return '<div class=g><img loading=lazy src="'+g.itemImageUrl+'"><div><b>'+g.itemName+'</b><small><span class=d style="color:'+col+'">'+(st||'D-'+g.remainDay)+'</span> · '+g.brandName+'</small><small>'+g.senderName+' · '+g.receivedAt.slice(0,10)+'</small></div><a href="'+k[0]+'">바코드</a></div>'}).join('')};
 $('c').onclick=e=>{const b=e.target.dataset&&e.target.dataset.b;if(b===undefined)return;B=B===b?'':b;chips();R()};
 $('q').oninput=R;
 if(D.length){$('n').textContent=D.length+'개 (갱신중)';chips();R()}

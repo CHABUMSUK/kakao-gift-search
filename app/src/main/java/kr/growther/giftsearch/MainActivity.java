@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebResourceRequest;
@@ -14,10 +15,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
+import androidx.webkit.WebViewCompat;
+import androidx.webkit.WebViewFeature;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -25,9 +30,24 @@ public class MainActivity extends Activity {
     // PC(데스크톱) 브라우저처럼 보이게 해서, 휴대폰용 선물하기가 카톡 앱으로 튕기는 것을 막음
     private static final String DESKTOP_UA =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
+
+    // 페이지 스크립트보다 먼저 실행: 앱 내장 브라우저의 "모바일" 신호(userAgentData.mobile 등)를 PC 값으로 바꿈
+    private static final String DESKTOP_SPOOF =
+        "(function(){try{" +
+        "var d={brands:[{brand:'Chromium',version:'129'},{brand:'Google Chrome',version:'129'},{brand:'Not=A?Brand',version:'8'}],mobile:false,platform:'Windows'," +
+        "getHighEntropyValues:function(){return Promise.resolve({brands:d.brands,mobile:false,platform:'Windows',platformVersion:'10.0.0',model:'',architecture:'x86',bitness:'64',uaFullVersion:'129.0.0.0',fullVersionList:d.brands});}," +
+        "toJSON:function(){return {brands:d.brands,mobile:false,platform:'Windows'};}};" +
+        "Object.defineProperty(Navigator.prototype,'userAgentData',{get:function(){return d;},configurable:true});" +
+        "Object.defineProperty(Navigator.prototype,'maxTouchPoints',{get:function(){return 0;},configurable:true});" +
+        "Object.defineProperty(Navigator.prototype,'platform',{get:function(){return 'Win32';},configurable:true});" +
+        "}catch(e){}})();";
+
     private WebView web;
     private String js;
+    private boolean spoofReady = false;
     private final List<String> nav = new ArrayList<>();
+    private long lastRedirectAt = 0;
+    private int redirectCount = 0;
 
     private void log(String s) {
         if (s == null) return;
@@ -57,6 +77,11 @@ public class MainActivity extends Activity {
             }
             return sb.toString();
         }
+
+        @JavascriptInterface
+        public String info() {
+            return "spoof=" + spoofReady;
+        }
     }
 
     @Override
@@ -81,6 +106,15 @@ public class MainActivity extends Activity {
 
         web.addJavascriptInterface(new Bridge(), "KGX");
 
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            try {
+                WebViewCompat.addDocumentStartJavaScript(web, DESKTOP_SPOOF, Collections.singleton("*"));
+                spoofReady = true;
+            } catch (Exception e) {
+                spoofReady = false;
+            }
+        }
+
         web.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
@@ -90,6 +124,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 log("> " + url);
+                if (!spoofReady) view.evaluateJavascript(DESKTOP_SPOOF, null);
             }
 
             @Override
@@ -121,8 +156,15 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
                 return true;
             }
-            // gift-talk 연결 페이지는 웹에서 홈으로 튕기므로, 목적지(to)가 있으면 그 주소를 앱 안에서 연다
+            // gift-talk 연결 페이지(카톡 앱으로 보내는 곳)는 앱 안에서 처리. 무한 반복은 막음
             if (url.contains("gift-talk.kakao.com")) {
+                long now = SystemClock.elapsedRealtime();
+                redirectCount = (now - lastRedirectAt < 8000) ? redirectCount + 1 : 1;
+                lastRedirectAt = now;
+                if (redirectCount > 2) {
+                    Toast.makeText(this, "선물하기가 카톡 앱으로 보내려 해서 멈췄어요", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 Uri u = Uri.parse(url);
                 String to = u.getQueryParameter("to");
                 web.loadUrl(to != null && to.startsWith("https://gift.kakao.com") ? to : HOME);

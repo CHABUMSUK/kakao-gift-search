@@ -7,3 +7,9 @@
 
 ## APK 받기
 Releases의 가장 최신 giftsearch.apk를 휴대폰에서 내려받아 설치해요.
+
+## 아이폰 (시험 중)
+1. 앱스토어에서 무료 앱 **Userscripts**(개발자 Justin Wasack) 설치 후, 설정 → 앱 → Safari → 확장 프로그램 → Userscripts 켜기, 모든 웹사이트 허용
+2. 사파리에서 아래 주소 열기 → 주소창의 퍼즐(확장) 아이콘 → Userscripts → Install
+   https://raw.githubusercontent.com/CHABUMSUK/kakao-gift-search/main/ios/giftsearch.user.js
+3. 사파리로 gift.kakao.com 열기 → 노란 검색창 → 바코드 누르면 카카오톡으로 열림

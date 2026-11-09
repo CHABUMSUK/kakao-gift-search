@@ -19,6 +19,10 @@ import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -44,6 +48,9 @@ public class MainActivity extends Activity {
 
     private WebView web;
     private String js;
+    private boolean pageReady = false;
+    // 앱을 켤 때마다 최신 검색 화면 코드를 깃허브에서 받아옴 (실패하면 지난번 받은 코드, 그것도 없으면 앱에 들어 있는 코드)
+    private static final String REMOTE_JS = "https://raw.githubusercontent.com/CHABUMSUK/kakao-gift-search/main/app/src/main/assets/kgx.js";
     private boolean spoofReady = false;
     private final List<String> nav = new ArrayList<>();
     private long lastRedirectAt = 0;
@@ -87,7 +94,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        js = readAsset("kgx.js");
+        js = readCached();
+        if (js == null) js = readAsset("kgx.js");
+        fetchRemoteJs();
         web = new WebView(this);
         setContentView(web);
 
@@ -132,6 +141,7 @@ public class MainActivity extends Activity {
                 CookieManager.getInstance().flush();
                 Uri u = Uri.parse(url);
                 if ("gift.kakao.com".equals(u.getHost()) && js != null) {
+                    pageReady = true;
                     view.evaluateJavascript(js, null);
                 }
             }
@@ -203,6 +213,62 @@ public class MainActivity extends Activity {
     public void onBackPressed() {
         if (web.canGoBack()) web.goBack();
         else super.onBackPressed();
+    }
+
+    private boolean validJs(String s) {
+        return s != null && s.length() > 2000 && s.trim().startsWith("(async()=>{") && s.contains("kgx") && s.contains("gift.kakao.com");
+    }
+
+    private String readCached() {
+        try {
+            File f = new File(getFilesDir(), "kgx_remote.js");
+            if (!f.exists()) return null;
+            try (InputStream in = new java.io.FileInputStream(f)) {
+                String s = readAll(in);
+                return validJs(s) ? s : null;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void fetchRemoteJs() {
+        new Thread(() -> {
+            HttpURLConnection c = null;
+            try {
+                c = (HttpURLConnection) new URL(REMOTE_JS + "?t=" + (System.currentTimeMillis() / 60000)).openConnection();
+                c.setConnectTimeout(5000);
+                c.setReadTimeout(8000);
+                c.setUseCaches(false);
+                if (c.getResponseCode() != 200) return;
+                String s;
+                try (InputStream in = c.getInputStream()) { s = readAll(in); }
+                if (!validJs(s) || s.equals(js)) return;
+                try (FileOutputStream out = new FileOutputStream(new File(getFilesDir(), "kgx_remote.js"))) {
+                    out.write(s.getBytes(StandardCharsets.UTF_8));
+                }
+                final String fresh = s;
+                runOnUiThread(() -> {
+                    js = fresh;
+                    // 이미 검색 화면이 떠 있으면 새 코드로 다시 그림
+                    if (pageReady && web != null) {
+                        web.evaluateJavascript("(function(){var e=document.getElementById('kgx');if(e)e.remove();})();", null);
+                        web.evaluateJavascript(js, null);
+                    }
+                });
+            } catch (Exception ignored) {
+            } finally {
+                if (c != null) c.disconnect();
+            }
+        }).start();
+    }
+
+    private String readAll(InputStream in) throws java.io.IOException {
+        ByteArrayOutputStream bo = new ByteArrayOutputStream();
+        byte[] buf = new byte[8192];
+        int n;
+        while ((n = in.read(buf)) > 0) bo.write(buf, 0, n);
+        return bo.toString(StandardCharsets.UTF_8.name());
     }
 
     private String readAsset(String name) {

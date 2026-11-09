@@ -7,12 +7,31 @@ on:
       - 'ios/**'
       - '**.md'
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 */3 * *'
 
 permissions:
   contents: write
 
+# 빌드가 동시에 돌면 서명 키가 서로 달라지므로 한 번에 하나씩
+concurrency:
+  group: build-apk
+  cancel-in-progress: false
+
 jobs:
+  # 3일마다 서명 키 캐시를 한 번씩 읽어서 지워지지 않게 유지 (7일 동안 안 쓰면 깃허브가 지움)
+  keep-signing-key:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache/restore@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: debug-keystore-v2
+      - run: ls -la ~/.android/ || true
+
   build:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     env:
       ANDROID_USER_HOME: /home/runner/.android

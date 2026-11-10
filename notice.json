@@ -1,0 +1,37 @@
+{
+  "notices": [
+    {
+      "id": "2026-11-09-v2",
+      "text": "선물검색 v2.0: 이제 앱을 켜면 자동으로 최신 화면으로 바뀝니다",
+      "link": "",
+      "linkText": "",
+      "start": "2026-11-09",
+      "end": "2026-11-30",
+      "color": "#fff4b8"
+    },
+    {
+      "id": "2026-11-09-blog",
+      "text": "앱 개발기를 블로그에 정리했어요",
+      "link": "https://blog.naver.com/album7",
+      "linkText": "보러가기",
+      "start": "2026-11-09",
+      "end": "2026-12-31",
+      "color": "#eaf4ff"
+    }
+  ],
+  "developer": {
+    "name": "차범석",
+    "title": "건국대 부동산대학원 건개46기",
+    "intro": "생활 속 불편을 AI와 함께 고쳐 나가고 있어요.\n앱 개선 의견이나 AI 활용 이야기는 언제든 환영합니다.",
+    "links": [
+      {
+        "label": "블로그",
+        "url": "https://blog.naver.com/album7"
+      },
+      {
+        "label": "인스타그램",
+        "url": "https://www.instagram.com/growth_er"
+      }
+    ]
+  }
+}

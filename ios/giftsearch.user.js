@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         선물검색 (아이폰)
 // @namespace    growth_er.kakao-gift-search
-// @version      1.2
+// @version      1.3
 // @description  카카오 선물함 검색: 브랜드, 상품명으로 찾고 바코드 버튼으로 카카오톡에서 바로 열기
 // @match        https://gift.kakao.com/*
 // @noframes
@@ -54,7 +54,7 @@ const R=()=>{localStorage.kgxQ=$('q').value;if(NL&&!D.length){$('l').innerHTML=L
 const V=D.filter(g=>(!B||g.brandName===B)&&q.every(w=>(g.brandName+' '+(A[g.brandName]||'')+' '+g.itemName+' '+g.senderName).toLowerCase().includes(w)));
 const s={};V.forEach(g=>s[g.itemName]=(s[g.itemName]||0)+1);const top=Object.entries(s).sort((x,y)=>y[1]-x[1]).slice(0,4).map(([n,c])=>n+' ×'+c).join(' · ');
 $('l').innerHTML='<div class=s>'+V.length+'개'+(top?' · '+top:'')+'</div>'+V.slice(0,300).map(g=>{const k=K(g.tradeNo),st=g.stamp&&g.stamp.value,col=st?'#597ef7':g.remainDay<=7?'#ff4d4f':g.remainDay<=30?'#fa8c16':'#999';
-return '<div class=g><img loading=lazy src="'+g.itemImageUrl+'"><div><b>'+g.itemName+'</b><small><span class=d style="color:'+col+'">'+(st||'D-'+g.remainDay)+'</span> · '+g.brandName+'</small><small>'+g.senderName+' · '+g.receivedAt.slice(0,10)+'</small></div><a href="'+k[0]+'">바코드</a><a class=b href="'+k[1]+'">2</a></div>'}).join('')};
+return '<div class=g><img loading=lazy src="'+g.itemImageUrl+'"><div><b>'+g.itemName+'</b><small><span class=d style="color:'+col+'">'+(st||'D-'+g.remainDay)+'</span> · '+g.brandName+'</small><small>'+g.senderName+' · '+g.receivedAt.slice(0,10)+'</small></div><a href="'+k[0]+'">바코드</a></div>'}).join('')};
 $('c').onclick=e=>{const b=e.target.dataset&&e.target.dataset.b;if(b===undefined)return;B=B===b?'':b;chips();R()};
 $('q').oninput=R;
 if(D.length){$('n').textContent=D.length+'개 (갱신중)';chips();R()}
@@ -64,7 +64,7 @@ let ok=false;for(let t=0;t<3&&!ok;t++){try{D=await load();ok=true}catch(e){if(!D
 if(ok){NL=false;$('lgb').style.display='none';try{localStorage.kgxCache=JSON.stringify(D)}catch(e){}$('n').textContent='선물 '+D.length+'개';chips();R()}
 else{NL=true;$('n').textContent='로그인이 필요해요';$('lgb').style.display='inline-block';
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/(code|token|state|auth_tran_id)=[^&\s]+/gi,'$1=***');
-let ck='-',nl='-';try{ck='iOS스크립트 v1 | touch='+navigator.maxTouchPoints+' | standalone='+typeof navigator.standalone+' | spoof='+(window.__kgxSpoof||false)+' | UA='+navigator.userAgent.slice(0,70);nl=window.KGX?KGX.navLog():''}catch(e){}
+let ck='-',nl='-';try{ck='iOS스크립트 v1.3 | touch='+navigator.maxTouchPoints+' | standalone='+typeof navigator.standalone+' | spoof='+(window.__kgxSpoof||false)+' | UA='+navigator.userAgent.slice(0,70);nl=window.KGX?KGX.navLog():''}catch(e){}
 DG='[진단] '+DG+'\n[쿠키] '+ck+'\n[이동]\n'+nl;DGH='<pre class=dg>'+esc(DG)+'</pre>';R()}
 })(); };
 const addBtn = () => { if (document.getElementById('kgxbtn') || !document.body) return; const bt = document.createElement('button'); bt.id = 'kgxbtn'; bt.textContent = '선물검색';

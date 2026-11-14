@@ -43,6 +43,7 @@ https://raw.githubusercontent.com/CHABUMSUK/kakao-gift-search/main/ios/giftsearc
 3. 설치 주소를 **길게 눌러 복사** → **사파리 주소창에 붙여넣기 및 이동**. (카톡 링크를 그냥 누르지 마세요.)
 4. 코드 글자 화면이 나오면 정상 → 주소창 왼쪽 버튼 → **Userscripts**.
 5. 노란 띠 **"Userscript Detected: Tap to install"** → **Install**.
+   - 확인: Userscripts 창의 **폴더 버튼 → All Userscripts**에 "선물검색 (아이폰)"이 **흰 글씨 + 색깔 있는 JS**로 보이면 켜진 상태. 흐린 회색이면 한 번 눌러 켜기.
 6. 사파리 주소창에 **gift.kakao.com** → 노란 검색 화면 → 카카오 로그인.
 
 ![아이폰 1](docs/guide-i1.png)
@@ -50,6 +51,7 @@ https://raw.githubusercontent.com/CHABUMSUK/kakao-gift-search/main/ios/giftsearc
 ![아이폰 3](docs/guide-i3.png)
 ![아이폰 4](docs/guide-i4.png)
 ![아이폰 5](docs/guide-i5.png)
+![설치 확인](docs/guide-i5b.png)
 ![아이폰 6](docs/guide-i6.png)
 
 ---

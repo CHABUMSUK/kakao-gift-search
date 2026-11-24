@@ -1,15 +1,6 @@
 {
   "notices": [
     {
-      "id": "2026-11-09-v2",
-      "text": "선물검색 v2.0: 이제 앱을 켜면 자동으로 최신 화면으로 바뀝니다",
-      "link": "",
-      "linkText": "",
-      "start": "2026-11-09",
-      "end": "2026-11-30",
-      "color": "#fff4b8"
-    },
-    {
       "id": "2026-11-09-blog",
       "text": "앱 개발기를 블로그에 정리했어요",
       "link": "https://blog.naver.com/album7",

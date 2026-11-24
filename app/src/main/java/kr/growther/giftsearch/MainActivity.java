@@ -85,6 +85,21 @@ public class MainActivity extends Activity {
             return sb.toString();
         }
 
+        // "앱 카톡으로 알리기": 휴대폰 기본 공유 창(카카오톡 등)을 띄움
+        @JavascriptInterface
+        public void share(String text) {
+            runOnUiThread(() -> {
+                try {
+                    Intent send = new Intent(Intent.ACTION_SEND);
+                    send.setType("text/plain");
+                    send.putExtra(Intent.EXTRA_TEXT, text);
+                    startActivity(Intent.createChooser(send, "앱 카톡으로 알리기"));
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "공유 창을 열 수 없어요", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
         @JavascriptInterface
         public String info() {
             return "spoof=" + spoofReady;

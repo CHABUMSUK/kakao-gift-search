@@ -25,13 +25,17 @@
     "intro": "생활 속 불편을 AI와 함께 고쳐 나가고 있어요.\n앱 개선 의견이나 AI 활용 이야기는 언제든 환영합니다.",
     "links": [
       {
-        "label": "블로그",
+        "label": "블로그 (growth_er)",
         "url": "https://blog.naver.com/album7"
       },
       {
         "label": "인스타그램",
         "url": "https://www.instagram.com/growth_er"
       }
-    ]
+    ],
+    "image": "https://raw.githubusercontent.com/CHABUMSUK/kakao-gift-search/main/docs/brand-growth_er.png"
+  },
+  "share": {
+    "text": "[건부대 선물검색]\n카톡 선물함에 쌓인 선물, 브랜드·상품명으로 바로 찾고 바코드까지 한 번에!\n만든 사람 : 차범석(건개46기)\n\n설치 방법(안드로이드·아이폰)\nhttps://blog.naver.com/album7/224477170914"
   }
 }
